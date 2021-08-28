@@ -1,0 +1,152 @@
+<script src="js/vendor.min.js"></script>
+<!-- Plugin's Scripts -->
+<script src="plugins/fancybox/jquery.fancybox.min.js"></script>
+<script src="plugins/nice-select/jquery.nice-select.min.js"></script>
+<script src="plugins/aos/aos.min.js"></script>
+<script src="plugins/slick/slick.min.js"></script>
+<script src="plugins/counter-up/jquery.counterup.min.js"></script>
+<script src="plugins/counter-up/jquery.waypoints.min.js"></script>
+<script src="plugins/ui-range-slider/jquery-ui.js"></script>
+<!-- Activation Script -->
+<!-- <script src="js/drag-n-drop.js"></script> -->
+<script src="js/custom.js"></script>
+<!-- //char script style -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<script src="js/preloader.min.js"></script>
+<script src="js/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
+
+<script>
+  //Vue js
+  var app = new Vue({
+    el: "#app",
+
+    data() {
+      return {
+        blogPost: [],
+        datapost: {},
+        emppost:{},
+        employeeDetails:[],
+        url: "http://localhost:8700/api/v1",
+        id: "",
+      };
+    },
+    mounted: function () {
+        console.log("hello max");
+      this.getAbout();
+      this.getEmployee();
+    },
+    methods: {
+      async getAbout() {
+        try {
+          const response = await axios.get(`${this.url}/getAbout`);
+          this.blogPost = response.data;
+          console.log(response);
+        } catch (err) {
+          console.log(err);
+        }
+      },
+
+      createAbout() {
+        axios.post(`${this.url}/createAbout`, this.datapost).then((res) => {
+          if (res.data) {
+              this.alert("success", " successfull Inserted");
+            } else {
+              this.alert("success", "Error");
+            }
+          this.datapost = {};
+          this.getAbout();
+        });
+      },
+      //set sweet alert
+      alert: function (icon, title) {
+        swal({
+          icon,
+          title,
+
+          timer: 1500,
+        });
+      },
+      setInsData(blog) {
+        this.datapost = blog;
+        console.log(blog);
+      },
+
+      editAbout(datapost) {
+        axios
+          .put(`http://localhost:8700/api/v1/editAbout/${datapost.id}`, this.datapost)
+          .then((res) => {
+            if (res.data.success) {
+              this.alert("success", "updated");
+            } else {
+              console.log(res);
+            }
+            this.datapost = {};
+            this.getAbout();
+          });
+      },
+
+      async deleteAbout(id) {
+        try {
+          await axios.delete(`http://localhost:8700/api/v1/deleteAbout/${id}`);
+          this.alert('danger',"deleted")
+          this.getAbout();
+        } catch (err) {
+          console.log(err);
+        }
+      },
+
+      async getEmployee() {
+        try {
+          const response = await axios.get(`${this.url}/getEmployee`);
+          this.employeeDetails = response.data;
+          console.log(response);
+        } catch (err) {
+          console.log(err);
+        }
+      },
+      insertEmployee() {
+        axios.post(`${this.url}/insertEmployee`, this.emppost).then((res) => {
+          if (res.data) {
+              this.alert("success", " successfull Inserted");
+            } else {
+              this.alert("success", "Error");
+            }
+          this.emppost = {};
+          this.getEmployee();
+        });
+      },
+
+      setEmpData(employee) {
+        this.emppost = employee;
+        console.log(employee);
+      },
+
+      updateEmployee(emppost) {
+        axios
+          .put(`http://localhost:8700/api/v1/updateEmployee/${emppost.empId}`, this.emppost)
+          .then((res) => {
+            if (res.data.success) {
+              this.alert("success", "updated");
+            } else {
+              console.log(res);
+            }
+            this.emppost = {};
+            this.getEmployee();
+          });
+      },
+
+      async removeEmployee(id) {
+        try {
+          await axios.delete(`http://localhost:8700/api/v1/removeEmployee/${id}`);
+          this.alert('danger',"deleted")
+          this.getEmployee();
+        } catch (err) {
+          console.log(err);
+        }
+      },
+    },
+  });
+</script>
